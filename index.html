@@ -945,6 +945,20 @@ return;
 }
 
 
+const {data: {user}} =
+await supabaseClient.auth.getUser();
+
+if(!user){
+
+mostrarMensagemEstoque(
+"Usuário não está logado.",
+true
+);
+
+return;
+
+}
+
 const {error} =
 await supabaseClient
 .from("produtos")
@@ -958,7 +972,11 @@ quantidade:quantidade,
 
 minimo:isNaN(minimo)
 ?10
-:minimo
+:minimo,
+
+usuario_id:user.id
+
+}]);
 
 }]);
 
