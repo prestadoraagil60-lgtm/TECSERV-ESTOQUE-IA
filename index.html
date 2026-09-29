@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>TECSERV ESTOQUE IA</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -38,6 +39,85 @@ margin:auto;
 padding:25px
 }
 
+.login{
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px
+}
+
+.login-box{
+width:100%;
+max-width:420px;
+background:#0e1d13;
+border:1px solid #1d4427;
+border-radius:16px;
+padding:30px;
+box-shadow:0 10px 40px #0008
+}
+
+.login-box h1{
+margin-top:0;
+text-align:center
+}
+
+.login-logo{
+text-align:center;
+font-size:28px;
+font-weight:bold;
+margin-bottom:25px
+}
+
+.login-logo span{
+color:#39e75f
+}
+
+input{
+background:#08120b;
+color:white;
+border:1px solid #285533;
+padding:12px;
+border-radius:8px;
+width:100%;
+margin:6px 0 14px
+}
+
+label{
+font-size:14px;
+color:#b7c5ba
+}
+
+button{
+background:#39e75f;
+border:0;
+padding:12px 18px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer
+}
+
+button:hover{
+opacity:.85
+}
+
+.btn{
+width:100%;
+margin-top:8px
+}
+
+.btn-secundario{
+background:#18351f;
+color:white;
+border:1px solid #285533
+}
+
+.mensagem{
+margin-top:15px;
+text-align:center;
+font-size:14px
+}
+
 .cards{
 display:grid;
 grid-template-columns:repeat(4,1fr);
@@ -67,27 +147,16 @@ color:#39e75f;
 margin-top:8px
 }
 
-button{
-background:#39e75f;
-border:0;
-padding:12px 18px;
-border-radius:8px;
-font-weight:bold;
-cursor:pointer
+.topo{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:15px;
+flex-wrap:wrap
 }
 
-button:hover{
-opacity:.85
-}
-
-input{
-background:#08120b;
-color:white;
-border:1px solid #285533;
-padding:11px;
-border-radius:8px;
-width:100%;
-margin:6px 0
+.usuario{
+color:#9aaa9e
 }
 
 .form{
@@ -121,493 +190,106 @@ color:#39e75f
 color:#ff6b61
 }
 
-#mensagem{
+#mensagemEstoque{
 margin-top:10px;
 font-weight:bold
 }
 
+.oculto{
+display:none!important
+}
+
 @media(max-width:800px){
-.cards{grid-template-columns:repeat(2,1fr)}
-.form{grid-template-columns:1fr}
+
+.cards{
+grid-template-columns:repeat(2,1fr)
+}
+
+.form{
+grid-template-columns:1fr
+}
+
 }
 
 @media(max-width:500px){
-.cards{grid-template-columns:1fr}
-.container{padding:15px}
-table{font-size:13px}
+
+.cards{
+grid-template-columns:1fr
+}
+
+.container{
+padding:15px
+}
+
+table{
+font-size:13px
+}
+
+.topo{
+align-items:flex-start
+}
+
 }
 </style>
 </head>
 
 <body>
 
-<header>
-<div class="logo">
-TEC<span>SERV</span> ESTOQUE IA
-</div>
-</header>
+<!-- ================= LOGIN ================= -->
 
-<div class="container">
+<div id="telaLogin" class="login">
 
-<h1>Dashboard</h1>
-<p>Controle inteligente do seu estoque.</p>
+<div class="login-box">
 
-<div class="cards">
-
-<div class="card">
-<small>Total de produtos</small>
-<div class="number" id="totalProdutos">0</div>
+<div class="login-logo">
+TEC<span>SERV</span>
 </div>
 
-<div class="card">
-<small>Unidades em estoque</small>
-<div class="number" id="totalEstoque">0</div>
-</div>
+<h1 id="tituloLogin">Entrar</h1>
 
-<div class="card">
-<small>Estoque baixo</small>
-<div class="number" id="estoqueBaixo">0</div>
-</div>
+<div id="campoNome" class="oculto">
 
-<div class="card">
-<small>Valor do estoque</small>
-<div class="number" id="valorEstoque">R$ 0,00</div>
-</div>
+<label>Nome</label>
+
+<input
+id="nomeCadastro"
+type="text"
+placeholder="Seu nome">
 
 </div>
 
-<div class="panel">
+<label>E-mail</label>
 
-<h2>➕ Cadastrar produto</h2>
+<input
+id="email"
+type="email"
+placeholder="seu@email.com">
 
-<div class="form">
+<label>Senha</label>
 
-<div>
-<label>Produto</label>
-<input id="nome" placeholder="Ex.: Tampa Flip Top 43">
-</div>
+<input
+id="senha"
+type="password"
+placeholder="Sua senha">
 
-<div>
-<label>Preço</label>
-<input id="preco" type="number" step="0.01" placeholder="0,00">
-</div>
+<button
+id="botaoLogin"
+class="btn"
+onclick="entrar()">
 
-<div>
-<label>Quantidade</label>
-<input id="quantidade" type="number" placeholder="0">
-</div>
+Entrar
 
-<div>
-<label>Estoque mínimo</label>
-<input id="minimo" type="number" placeholder="10">
-</div>
-
-<div>
-<button onclick="adicionar()">Adicionar</button>
-</div>
-
-</div>
-
-<div id="mensagem"></div>
-
-</div>
-
-<div class="panel">
-
-<h2>📦 Estoque</h2>
-
-<input id="pesquisa"
-placeholder="🔎 Pesquisar produto..."
-oninput="mostrar()">
-
-<table>
-
-<thead>
-<tr>
-<th>Produto</th>
-<th>Preço</th>
-<th>Quantidade</th>
-<th>Status</th>
-<th>Ação</th>
-</tr>
-</thead>
-
-<tbody id="lista"></tbody>
-
-</table>
-
-</div>
-
-<div class="panel">
-
-<h2>🤖 Assistente IA</h2>
-
-<p id="resposta">
-Clique no botão para analisar seu estoque.
-</p>
-
-<button onclick="analisarIA()">
-Analisar estoque
 </button>
 
-</div>
+<button
+id="botaoCadastro"
+class="btn btn-secundario"
+onclick="alternarCadastro()">
 
-</div>
+Criar conta
 
-<script>
-
-/* ==============================
-   CONFIGURAÇÃO SUPABASE
-   ============================== */
-
-const SUPABASE_URL =
-"https://hefszyovtyhweyuaheof.supabase.co";
-
-/*
-COLOQUE AQUI SUA PUBLISHABLE KEY
-OU A CHAVE anon pública do Supabase.
-*/
-
-const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhlZnN6eW92dHlod2V5dWFoZW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTU1MTgsImV4cCI6MjEwNjI3MTUxOH0.ygbgiLPtoAY423UzabRWUjPeYqFBieHGkek0Lc-7jHw";
-
-const supabaseClient =
-supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
-
-
-/* ==============================
-   MENSAGEM
-   ============================== */
-
-function mensagem(texto, erro=false){
-
-const campo =
-document.getElementById("mensagem");
-
-campo.textContent=texto;
-
-campo.style.color =
-erro ? "#ff6b61" : "#39e75f";
-
-setTimeout(()=>{
-campo.textContent="";
-},4000);
-
-}
-
-
-/* ==============================
-   FORMATAR DINHEIRO
-   ============================== */
-
-function dinheiro(valor){
-
-return Number(valor).toLocaleString(
-"pt-BR",
-{
-style:"currency",
-currency:"BRL"
-}
-);
-
-}
-
-
-/* ==============================
-   CARREGAR PRODUTOS
-   ============================== */
-
-async function carregarProdutos(){
-
-const {data,error} =
-await supabaseClient
-.from("produtos")
-.select("*")
-.order("id",{ascending:false});
-
-if(error){
-
-console.error(error);
-
-mensagem(
-"Erro ao carregar produtos: "+error.message,
-true
-);
-
-return;
-}
-
-mostrar(data || []);
-
-}
-
-
-/* ==============================
-   ADICIONAR
-   ============================== */
-
-async function adicionar(){
-
-const nome =
-document.getElementById("nome").value.trim();
-
-const preco =
-parseFloat(
-document.getElementById("preco").value
-);
-
-const quantidade =
-parseInt(
-document.getElementById("quantidade").value
-);
-
-const minimo =
-parseInt(
-document.getElementById("minimo").value
-);
-
-if(
-!nome ||
-isNaN(preco) ||
-isNaN(quantidade)
-){
-
-mensagem(
-"Preencha os dados do produto.",
-true
-);
-
-return;
-}
-
-const {error} =
-await supabaseClient
-.from("produtos")
-.insert([{
-
-nome:nome,
-preco:preco,
-quantidade:quantidade,
-minimo:isNaN(minimo) ? 10 : minimo
-
-}]);
-
-if(error){
-
-console.error(error);
-
-mensagem(
-"Erro ao cadastrar: "+error.message,
-true
-);
-
-return;
-}
-
-document.getElementById("nome").value="";
-document.getElementById("preco").value="";
-document.getElementById("quantidade").value="";
-document.getElementById("minimo").value="";
-
-mensagem("Produto cadastrado com sucesso!");
-
-carregarProdutos();
-
-}
-
-
-/* ==============================
-   EXCLUIR
-   ============================== */
-
-async function excluir(id){
-
-if(!confirm("Excluir este produto?"))
-return;
-
-const {error} =
-await supabaseClient
-.from("produtos")
-.delete()
-.eq("id",id);
-
-if(error){
-
-console.error(error);
-
-mensagem(
-"Erro ao excluir: "+error.message,
-true
-);
-
-return;
-}
-
-mensagem("Produto excluído.");
-
-carregarProdutos();
-
-}
-
-
-/* ==============================
-   MOSTRAR
-   ============================== */
-
-let produtos=[];
-
-function mostrar(lista=null){
-
-if(lista!==null)
-produtos=lista;
-
-const busca =
-document
-.getElementById("pesquisa")
-.value
-.toLowerCase();
-
-const tabela =
-document.getElementById("lista");
-
-tabela.innerHTML="";
-
-produtos.forEach(p=>{
-
-if(!p.nome.toLowerCase().includes(busca))
-return;
-
-const baixo =
-Number(p.quantidade)<=Number(p.minimo);
-
-tabela.innerHTML += `
-
-<tr>
-
-<td>${p.nome}</td>
-
-<td>${dinheiro(p.preco)}</td>
-
-<td>${p.quantidade}</td>
-
-<td class="${baixo?'baixo':'status'}">
-
-${baixo?'⚠ Estoque baixo':'✓ Normal'}
-
-</td>
-
-<td>
-
-<button onclick="excluir(${p.id})">
-Excluir
 </button>
 
-</td>
-
-</tr>
-
-`;
-
-});
-
-atualizar();
-
-}
-
-
-/* ==============================
-   DASHBOARD
-   ============================== */
-
-function atualizar(){
-
-const total =
-produtos.length;
-
-const unidades =
-produtos.reduce(
-(a,p)=>a+Number(p.quantidade),
-0
-);
-
-const baixo =
-produtos.filter(
-p=>Number(p.quantidade)<=Number(p.minimo)
-).length;
-
-const valor =
-produtos.reduce(
-(a,p)=>
-a+
-(Number(p.preco)*Number(p.quantidade)),
-0
-);
-
-document.getElementById(
-"totalProdutos"
-).textContent=total;
-
-document.getElementById(
-"totalEstoque"
-).textContent=unidades;
-
-document.getElementById(
-"estoqueBaixo"
-).textContent=baixo;
-
-document.getElementById(
-"valorEstoque"
-).textContent=dinheiro(valor);
-
-}
-
-
-/* ==============================
-   IA
-   ============================== */
-
-function analisarIA(){
-
-const baixo =
-produtos.filter(
-p=>Number(p.quantidade)<=Number(p.minimo)
-);
-
-if(baixo.length===0){
-
-document.getElementById(
-"resposta"
-).innerHTML=
-"🤖 <b>Análise:</b> nenhum produto está abaixo do estoque mínimo.";
-
-return;
-
-}
-
-document.getElementById(
-"resposta"
-).innerHTML=
-"🤖 <b>Atenção!</b> Produtos que precisam de reposição:<br><br>"+
-baixo.map(
-p=>
-"• "+p.nome+
-" — "+p.quantidade+
-" unidades (mínimo "+p.minimo+")"
-).join("<br>");
-
-}
-
-
-/* ==============================
-   INICIAR
-   ============================== */
-
-carregarProdutos();
-
-</script>
-
-</body>
-</html>
+<div
+id="mensagemLogin"
+class="mens
