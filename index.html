@@ -1,4 +1,4 @@
-a<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -73,7 +73,7 @@ margin-bottom:25px
 color:#39e75f
 }
 
-input{
+input,select{
 background:#08120b;
 color:white;
 border:1px solid #285533;
@@ -166,6 +166,65 @@ gap:8px;
 align-items:end
 }
 
+.movimentacao{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-top:15px
+}
+
+.btn-entrada{
+background:#39e75f;
+color:#07110a
+}
+
+.btn-saida{
+background:#ff6b61;
+color:white
+}
+
+.btn-historico{
+background:#18351f;
+color:white;
+border:1px solid #285533
+}
+
+.modal{
+position:fixed;
+inset:0;
+background:#000b;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+z-index:1000
+}
+
+.modal-box{
+width:100%;
+max-width:450px;
+background:#0e1d13;
+border:1px solid #1d4427;
+border-radius:16px;
+padding:25px
+}
+
+.modal-acoes{
+display:flex;
+gap:10px;
+margin-top:15px
+}
+
+.modal-acoes button{
+flex:1
+}
+
+.historico{
+max-height:400px;
+overflow:auto;
+margin-top:15px
+}
+
 table{
 width:100%;
 border-collapse:collapse;
@@ -187,6 +246,14 @@ color:#39e75f
 }
 
 .baixo{
+color:#ff6b61
+}
+
+.entrada{
+color:#39e75f
+}
+
+.saida{
 color:#ff6b61
 }
 
@@ -235,7 +302,7 @@ align-items:flex-start
 
 <body>
 
-<!-- ================= LOGIN ================= -->
+<!-- LOGIN -->
 
 <div id="telaLogin" class="login">
 
@@ -251,56 +318,34 @@ TEC<span>SERV</span>
 
 <label>Nome</label>
 
-<input
-id="nomeCadastro"
-type="text"
-placeholder="Seu nome">
+<input id="nomeCadastro" type="text" placeholder="Seu nome">
 
 </div>
 
 <label>E-mail</label>
 
-<input
-id="email"
-type="email"
-placeholder="seu@email.com">
+<input id="email" type="email" placeholder="seu@email.com">
 
 <label>Senha</label>
 
-<input
-id="senha"
-type="password"
-placeholder="Sua senha">
+<input id="senha" type="password" placeholder="Sua senha">
 
-<button
-id="botaoLogin"
-class="btn"
-onclick="entrar()">
-
+<button id="botaoLogin" class="btn" onclick="entrar()">
 Entrar
-
 </button>
 
-<button
-id="botaoCadastro"
-class="btn btn-secundario"
-onclick="alternarCadastro()">
-
+<button id="botaoCadastro" class="btn btn-secundario" onclick="alternarCadastro()">
 Criar conta
-
 </button>
 
-<div
-id="mensagemLogin"
-class="mensagem">
-</div>
+<div id="mensagemLogin" class="mensagem"></div>
 
 </div>
 
 </div>
 
 
-<!-- ================= SISTEMA ================= -->
+<!-- SISTEMA -->
 
 <div id="sistema" class="oculto">
 
@@ -337,54 +382,23 @@ Sair
 <div class="cards">
 
 <div class="card">
-
 <small>Total de produtos</small>
-
-<div
-class="number"
-id="totalProdutos">
-0
+<div class="number" id="totalProdutos">0</div>
 </div>
-
-</div>
-
 
 <div class="card">
-
 <small>Unidades em estoque</small>
-
-<div
-class="number"
-id="totalEstoque">
-0
+<div class="number" id="totalEstoque">0</div>
 </div>
-
-</div>
-
 
 <div class="card">
-
 <small>Estoque baixo</small>
-
-<div
-class="number"
-id="estoqueBaixo">
-0
+<div class="number" id="estoqueBaixo">0</div>
 </div>
-
-</div>
-
 
 <div class="card">
-
 <small>Valor do estoque</small>
-
-<div
-class="number"
-id="valorEstoque">
-R$ 0,00
-</div>
-
+<div class="number" id="valorEstoque">R$ 0,00</div>
 </div>
 
 </div>
@@ -399,59 +413,27 @@ R$ 0,00
 <div class="form">
 
 <div>
-
 <label>Produto</label>
-
-<input
-id="nomeProduto"
-placeholder="Ex.: Tampa Flip Top 43">
-
+<input id="nomeProduto" placeholder="Ex.: Tampa Flip Top 43">
 </div>
 
-
 <div>
-
 <label>Preço</label>
-
-<input
-id="preco"
-type="number"
-step="0.01"
-placeholder="0,00">
-
+<input id="preco" type="number" step="0.01" placeholder="0,00">
 </div>
 
-
 <div>
-
 <label>Quantidade</label>
-
-<input
-id="quantidade"
-type="number"
-placeholder="0">
-
+<input id="quantidade" type="number" placeholder="0">
 </div>
 
-
 <div>
-
 <label>Estoque mínimo</label>
-
-<input
-id="minimo"
-type="number"
-placeholder="10">
-
+<input id="minimo" type="number" placeholder="10">
 </div>
 
-
 <div>
-
-<button onclick="adicionar()">
-Adicionar
-</button>
-
+<button onclick="adicionar()">Adicionar</button>
 </div>
 
 </div>
@@ -467,6 +449,22 @@ Adicionar
 
 <h2>📦 Estoque</h2>
 
+<div class="movimentacao">
+
+<button class="btn-entrada" onclick="abrirMovimentacao('entrada')">
+➕ Entrada
+</button>
+
+<button class="btn-saida" onclick="abrirMovimentacao('saida')">
+➖ Saída
+</button>
+
+<button class="btn-historico" onclick="mostrarHistorico()">
+📋 Histórico
+</button>
+
+</div>
+
 <input
 id="pesquisa"
 placeholder="🔎 Pesquisar produto..."
@@ -477,13 +475,11 @@ oninput="filtrar()">
 <thead>
 
 <tr>
-
 <th>Produto</th>
 <th>Preço</th>
 <th>Quantidade</th>
 <th>Status</th>
 <th>Ação</th>
-
 </tr>
 
 </thead>
@@ -516,26 +512,86 @@ Analisar estoque
 </div>
 
 
+<!-- MODAL MOVIMENTAÇÃO -->
+
+<div id="modalMovimentacao" class="modal oculto">
+
+<div class="modal-box">
+
+<h2 id="tituloMovimentacao">
+Movimentação
+</h2>
+
+<label>Produto</label>
+
+<select id="produtoMovimentacao"></select>
+
+<label>Quantidade</label>
+
+<input
+id="quantidadeMovimentacao"
+type="number"
+min="1"
+placeholder="Digite a quantidade">
+
+<div class="modal-acoes">
+
+<button onclick="confirmarMovimentacao()">
+Confirmar
+</button>
+
+<button
+class="btn-secundario"
+onclick="fecharModal()">
+Cancelar
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- MODAL HISTÓRICO -->
+
+<div id="modalHistorico" class="modal oculto">
+
+<div class="modal-box">
+
+<h2>📋 Histórico</h2>
+
+<div id="listaHistorico" class="historico"></div>
+
+<div class="modal-acoes">
+
+<button
+class="btn-secundario"
+onclick="fecharHistorico()">
+Fechar
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
 <script>
 
-/* ==========================================
-   SUPABASE
-========================================== */
+/* SUPABASE */
 
 const SUPABASE_URL =
 "https://hefszyovtyhweyuaheof.supabase.co";
 
-
 /*
-IMPORTANTE:
-
-COLE A MESMA PUBLISHABLE KEY
-QUE VOCÊ JÁ USOU NO SEU CÓDIGO ANTERIOR.
+MANTENHA A MESMA PUBLISHABLE KEY
+QUE VOCÊ JÁ ESTAVA USANDO.
 */
 
 const SUPABASE_KEY =
-"sb_publishable_J4ZgCJoupJ9nkRc9OjG4KQ_79koSKbc";
-
+"COLE_AQUI_A_MESMA_PUBLISHABLE_KEY_DO_SEU_CODIGO_ANTERIOR";
 
 const supabaseClient =
 supabase.createClient(
@@ -544,18 +600,14 @@ SUPABASE_KEY
 );
 
 
-/* ==========================================
-   VARIÁVEIS
-========================================== */
+/* VARIÁVEIS */
 
 let produtos=[];
-
 let modoCadastro=false;
+let tipoMovimentacao="";
 
 
-/* ==========================================
-   MENSAGEM LOGIN
-========================================== */
+/* LOGIN */
 
 function mensagemLogin(texto,erro=false){
 
@@ -566,13 +618,8 @@ campo.textContent=texto;
 
 campo.style.color =
 erro ? "#ff6b61" : "#39e75f";
-
 }
 
-
-/* ==========================================
-   ALTERNAR LOGIN/CADASTRO
-========================================== */
 
 function alternarCadastro(){
 
@@ -589,7 +636,6 @@ document.getElementById("botaoLogin");
 
 const botaoCadastro =
 document.getElementById("botaoCadastro");
-
 
 if(modoCadastro){
 
@@ -624,24 +670,18 @@ mensagemLogin("");
 }
 
 
-/* ==========================================
-   CADASTRAR
-========================================== */
+/* CADASTRO */
 
 async function cadastrar(){
 
 const nome =
-document.getElementById("nomeCadastro")
-.value.trim();
+document.getElementById("nomeCadastro").value.trim();
 
 const email =
-document.getElementById("email")
-.value.trim();
+document.getElementById("email").value.trim();
 
 const senha =
-document.getElementById("senha")
-.value;
-
+document.getElementById("senha").value;
 
 if(!nome || !email || !senha){
 
@@ -651,9 +691,7 @@ true
 );
 
 return;
-
 }
-
 
 if(senha.length<6){
 
@@ -663,14 +701,9 @@ true
 );
 
 return;
-
 }
 
-
-mensagemLogin(
-"Criando sua conta..."
-);
-
+mensagemLogin("Criando sua conta...");
 
 const {data,error} =
 await supabaseClient.auth.signUp({
@@ -687,7 +720,6 @@ nome:nome
 
 });
 
-
 if(error){
 
 console.error(error);
@@ -698,15 +730,7 @@ true
 );
 
 return;
-
 }
-
-
-/*
-Se a confirmação de e-mail estiver
-ativada no Supabase, o usuário precisará
-confirmar o e-mail.
-*/
 
 if(data.session){
 
@@ -723,20 +747,15 @@ mensagemLogin(
 }
 
 
-/* ==========================================
-   LOGIN
-========================================== */
+/* LOGIN */
 
 async function entrar(){
 
 const email =
-document.getElementById("email")
-.value.trim();
+document.getElementById("email").value.trim();
 
 const senha =
-document.getElementById("senha")
-.value;
-
+document.getElementById("senha").value;
 
 if(!email || !senha){
 
@@ -746,24 +765,17 @@ true
 );
 
 return;
-
 }
 
-
-mensagemLogin(
-"Entrando..."
-);
-
+mensagemLogin("Entrando...");
 
 const {data,error} =
 await supabaseClient.auth.signInWithPassword({
 
 email:email,
-
 password:senha
 
 });
-
 
 if(error){
 
@@ -775,18 +787,14 @@ true
 );
 
 return;
-
 }
-
 
 mostrarSistema(data.user);
 
 }
 
 
-/* ==========================================
-   MOSTRAR SISTEMA
-========================================== */
+/* MOSTRAR SISTEMA */
 
 async function mostrarSistema(user){
 
@@ -798,26 +806,20 @@ document
 .getElementById("sistema")
 .classList.remove("oculto");
 
-
 const nome =
 user.user_metadata?.nome ||
 user.email;
 
-
 document
 .getElementById("usuarioNome")
-.textContent=
-"👤 "+nome;
-
+.textContent="👤 "+nome;
 
 await carregarProdutos();
 
 }
 
 
-/* ==========================================
-   VERIFICAR LOGIN
-========================================== */
+/* VERIFICAR LOGIN */
 
 async function verificarLogin(){
 
@@ -835,9 +837,7 @@ data.session.user
 }
 
 
-/* ==========================================
-   SAIR
-========================================== */
+/* SAIR */
 
 async function sair(){
 
@@ -853,20 +853,13 @@ document
 .getElementById("telaLogin")
 .classList.remove("oculto");
 
-document
-.getElementById("email")
-.value="";
-
-document
-.getElementById("senha")
-.value="";
+document.getElementById("email").value="";
+document.getElementById("senha").value="";
 
 }
 
 
-/* ==========================================
-   CARREGAR PRODUTOS
-========================================== */
+/* CARREGAR PRODUTOS */
 
 async function carregarProdutos(){
 
@@ -875,7 +868,6 @@ await supabaseClient
 .from("produtos")
 .select("*")
 .order("id",{ascending:false});
-
 
 if(error){
 
@@ -888,9 +880,7 @@ true
 );
 
 return;
-
 }
-
 
 produtos=data || [];
 
@@ -899,41 +889,29 @@ mostrar();
 }
 
 
-/* ==========================================
-   ADICIONAR PRODUTO
-========================================== */
+/* ADICIONAR PRODUTO */
 
 async function adicionar(){
 
 const nome =
-document
-.getElementById("nomeProduto")
-.value.trim();
+document.getElementById("nomeProduto").value.trim();
 
 const preco =
 parseFloat(
-document.getElementById("preco")
-.value
+document.getElementById("preco").value
 );
 
 const quantidade =
 parseInt(
-document.getElementById("quantidade")
-.value
+document.getElementById("quantidade").value
 );
 
 const minimo =
 parseInt(
-document.getElementById("minimo")
-.value
+document.getElementById("minimo").value
 );
 
-
-if(
-!nome ||
-isNaN(preco) ||
-isNaN(quantidade)
-){
+if(!nome || isNaN(preco) || isNaN(quantidade)){
 
 mostrarMensagemEstoque(
 "Preencha os dados do produto.",
@@ -941,392 +919,12 @@ true
 );
 
 return;
-
 }
 
-
-const {data: {user}} =
+const {data:{user}} =
 await supabaseClient.auth.getUser();
 
 if(!user){
 
 mostrarMensagemEstoque(
-"Usuário não está logado.",
-true
-);
-
-return;
-
-}
-
-const {error} =
-await supabaseClient
-.from("produtos")
-.insert([{
-
-nome:nome,
-
-preco:preco,
-
-quantidade:quantidade,
-
-minimo:isNaN(minimo)
-?10
-:minimo,
-
-usuario_id:user.id
-
-}]);
-
-
-if(error){
-
-console.error(error);
-
-mostrarMensagemEstoque(
-"Erro ao cadastrar: "+
-error.message,
-true
-);
-
-return;
-
-}
-
-
-document.getElementById("nomeProduto").value="";
-document.getElementById("preco").value="";
-document.getElementById("quantidade").value="";
-document.getElementById("minimo").value="";
-
-
-mostrarMensagemEstoque(
-"Produto cadastrado com sucesso!"
-);
-
-
-carregarProdutos();
-
-}
-
-
-/* ==========================================
-   EXCLUIR
-========================================== */
-
-async function excluir(id){
-
-if(!confirm("Excluir este produto?"))
-return;
-
-
-const {error} =
-await supabaseClient
-.from("produtos")
-.delete()
-.eq("id",id);
-
-
-if(error){
-
-console.error(error);
-
-mostrarMensagemEstoque(
-"Erro ao excluir: "+
-error.message,
-true
-);
-
-return;
-
-}
-
-
-mostrarMensagemEstoque(
-"Produto excluído."
-);
-
-
-carregarProdutos();
-
-}
-
-
-/* ==========================================
-   FILTRAR
-========================================== */
-
-function filtrar(){
-
-mostrar();
-
-}
-
-
-/* ==========================================
-   MOSTRAR PRODUTOS
-========================================== */
-
-function mostrar(){
-
-const busca =
-document
-.getElementById("pesquisa")
-.value
-.toLowerCase();
-
-
-const lista =
-document.getElementById("lista");
-
-
-lista.innerHTML="";
-
-
-produtos.forEach(p=>{
-
-if(
-!p.nome
-.toLowerCase()
-.includes(busca)
-)
-return;
-
-
-const baixo =
-Number(p.quantidade)
-<=
-Number(p.minimo);
-
-
-lista.innerHTML+=`
-
-<tr>
-
-<td>${p.nome}</td>
-
-<td>${dinheiro(p.preco)}</td>
-
-<td>${p.quantidade}</td>
-
-<td class="${baixo?'baixo':'status'}">
-
-${baixo
-?'⚠ Estoque baixo'
-:'✓ Normal'}
-
-</td>
-
-<td>
-
-<button
-onclick="excluir(${p.id})">
-
-Excluir
-
-</button>
-
-</td>
-
-</tr>
-
-`;
-
-});
-
-
-atualizarDashboard();
-
-}
-
-
-/* ==========================================
-   DASHBOARD
-========================================== */
-
-function atualizarDashboard(){
-
-const total =
-produtos.length;
-
-
-const unidades =
-produtos.reduce(
-(a,p)=>
-a+
-Number(p.quantidade),
-0
-);
-
-
-const baixo =
-produtos.filter(
-p=>
-Number(p.quantidade)
-<=
-Number(p.minimo)
-).length;
-
-
-const valor =
-produtos.reduce(
-(a,p)=>
-a+
-(
-Number(p.preco)
-*
-Number(p.quantidade)
-),
-0
-);
-
-
-document
-.getElementById("totalProdutos")
-.textContent=
-total;
-
-
-document
-.getElementById("totalEstoque")
-.textContent=
-unidades;
-
-
-document
-.getElementById("estoqueBaixo")
-.textContent=
-baixo;
-
-
-document
-.getElementById("valorEstoque")
-.textContent=
-dinheiro(valor);
-
-}
-
-
-/* ==========================================
-   DINHEIRO
-========================================== */
-
-function dinheiro(valor){
-
-return Number(valor)
-.toLocaleString(
-"pt-BR",
-{
-style:"currency",
-currency:"BRL"
-}
-);
-
-}
-
-
-/* ==========================================
-   MENSAGEM ESTOQUE
-========================================== */
-
-function mostrarMensagemEstoque(
-texto,
-erro=false
-){
-
-const campo =
-document.getElementById(
-"mensagemEstoque"
-);
-
-campo.textContent=texto;
-
-campo.style.color =
-erro
-?"#ff6b61"
-:"#39e75f";
-
-setTimeout(()=>{
-
-campo.textContent="";
-
-},4000);
-
-}
-
-
-/* ==========================================
-   ANÁLISE IA
-========================================== */
-
-function analisarIA(){
-
-const baixo =
-produtos.filter(
-p=>
-Number(p.quantidade)
-<=
-Number(p.minimo)
-);
-
-
-if(baixo.length===0){
-
-document
-.getElementById("resposta")
-.innerHTML=
-"🤖 <b>Análise:</b> nenhum produto está abaixo do estoque mínimo.";
-
-return;
-
-}
-
-
-document
-.getElementById("resposta")
-.innerHTML=
-"🤖 <b>Atenção!</b> Produtos que precisam de reposição:<br><br>"+
-baixo
-.map(
-p=>
-"• "+
-p.nome+
-" — "+
-p.quantidade+
-" unidades "+
-"(mínimo "+p.minimo+")"
-)
-.join("<br>");
-
-}
-
-
-/* ==========================================
-   INICIAR
-========================================== */
-
-verificarLogin();
-
-
-/* ==========================================
-   MONITORAR AUTENTICAÇÃO
-========================================== */
-
-supabaseClient.auth.onAuthStateChange(
-(event,session)=>{
-
-if(session){
-
-mostrarSistema(
-session.user
-);
-
-}
-
-}
-);
-
-</script>
-
-</body>
-</html>
+"Usu
