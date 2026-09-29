@@ -292,4 +292,1025 @@ Criar conta
 
 <div
 id="mensagemLogin"
-class="mens
+class="mensagem">
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ================= SISTEMA ================= -->
+
+<div id="sistema" class="oculto">
+
+<header>
+
+<div class="topo">
+
+<div class="logo">
+TEC<span>SERV</span> ESTOQUE IA
+</div>
+
+<div>
+
+<span id="usuarioNome" class="usuario"></span>
+
+<button onclick="sair()">
+Sair
+</button>
+
+</div>
+
+</div>
+
+</header>
+
+
+<div class="container">
+
+<h1>Dashboard</h1>
+
+<p>Controle inteligente do seu estoque.</p>
+
+
+<div class="cards">
+
+<div class="card">
+
+<small>Total de produtos</small>
+
+<div
+class="number"
+id="totalProdutos">
+0
+</div>
+
+</div>
+
+
+<div class="card">
+
+<small>Unidades em estoque</small>
+
+<div
+class="number"
+id="totalEstoque">
+0
+</div>
+
+</div>
+
+
+<div class="card">
+
+<small>Estoque baixo</small>
+
+<div
+class="number"
+id="estoqueBaixo">
+0
+</div>
+
+</div>
+
+
+<div class="card">
+
+<small>Valor do estoque</small>
+
+<div
+class="number"
+id="valorEstoque">
+R$ 0,00
+</div>
+
+</div>
+
+</div>
+
+
+<!-- CADASTRO -->
+
+<div class="panel">
+
+<h2>➕ Cadastrar produto</h2>
+
+<div class="form">
+
+<div>
+
+<label>Produto</label>
+
+<input
+id="nomeProduto"
+placeholder="Ex.: Tampa Flip Top 43">
+
+</div>
+
+
+<div>
+
+<label>Preço</label>
+
+<input
+id="preco"
+type="number"
+step="0.01"
+placeholder="0,00">
+
+</div>
+
+
+<div>
+
+<label>Quantidade</label>
+
+<input
+id="quantidade"
+type="number"
+placeholder="0">
+
+</div>
+
+
+<div>
+
+<label>Estoque mínimo</label>
+
+<input
+id="minimo"
+type="number"
+placeholder="10">
+
+</div>
+
+
+<div>
+
+<button onclick="adicionar()">
+Adicionar
+</button>
+
+</div>
+
+</div>
+
+<div id="mensagemEstoque"></div>
+
+</div>
+
+
+<!-- ESTOQUE -->
+
+<div class="panel">
+
+<h2>📦 Estoque</h2>
+
+<input
+id="pesquisa"
+placeholder="🔎 Pesquisar produto..."
+oninput="filtrar()">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Produto</th>
+<th>Preço</th>
+<th>Quantidade</th>
+<th>Status</th>
+<th>Ação</th>
+
+</tr>
+
+</thead>
+
+<tbody id="lista"></tbody>
+
+</table>
+
+</div>
+
+
+<!-- IA -->
+
+<div class="panel">
+
+<h2>🤖 Assistente IA</h2>
+
+<p id="resposta">
+Clique no botão para analisar seu estoque.
+</p>
+
+<button onclick="analisarIA()">
+Analisar estoque
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* ==========================================
+   SUPABASE
+========================================== */
+
+const SUPABASE_URL =
+"https://hefszyovtyhweyuaheof.supabase.co";
+
+
+/*
+IMPORTANTE:
+
+COLE A MESMA PUBLISHABLE KEY
+QUE VOCÊ JÁ USOU NO SEU CÓDIGO ANTERIOR.
+*/
+
+const SUPABASE_KEY =
+"sb_publishable_J4ZgCJoupJ9nkRc9OjG4KQ_79koSKbc";
+
+
+const supabaseClient =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/* ==========================================
+   VARIÁVEIS
+========================================== */
+
+let produtos=[];
+
+let modoCadastro=false;
+
+
+/* ==========================================
+   MENSAGEM LOGIN
+========================================== */
+
+function mensagemLogin(texto,erro=false){
+
+const campo =
+document.getElementById("mensagemLogin");
+
+campo.textContent=texto;
+
+campo.style.color =
+erro ? "#ff6b61" : "#39e75f";
+
+}
+
+
+/* ==========================================
+   ALTERNAR LOGIN/CADASTRO
+========================================== */
+
+function alternarCadastro(){
+
+modoCadastro=!modoCadastro;
+
+const titulo =
+document.getElementById("tituloLogin");
+
+const campoNome =
+document.getElementById("campoNome");
+
+const botaoLogin =
+document.getElementById("botaoLogin");
+
+const botaoCadastro =
+document.getElementById("botaoCadastro");
+
+
+if(modoCadastro){
+
+titulo.textContent="Criar conta";
+
+campoNome.classList.remove("oculto");
+
+botaoLogin.textContent="Cadastrar";
+
+botaoLogin.onclick=cadastrar;
+
+botaoCadastro.textContent="Voltar para login";
+
+mensagemLogin("");
+
+}else{
+
+titulo.textContent="Entrar";
+
+campoNome.classList.add("oculto");
+
+botaoLogin.textContent="Entrar";
+
+botaoLogin.onclick=entrar;
+
+botaoCadastro.textContent="Criar conta";
+
+mensagemLogin("");
+
+}
+
+}
+
+
+/* ==========================================
+   CADASTRAR
+========================================== */
+
+async function cadastrar(){
+
+const nome =
+document.getElementById("nomeCadastro")
+.value.trim();
+
+const email =
+document.getElementById("email")
+.value.trim();
+
+const senha =
+document.getElementById("senha")
+.value;
+
+
+if(!nome || !email || !senha){
+
+mensagemLogin(
+"Preencha nome, e-mail e senha.",
+true
+);
+
+return;
+
+}
+
+
+if(senha.length<6){
+
+mensagemLogin(
+"A senha precisa ter pelo menos 6 caracteres.",
+true
+);
+
+return;
+
+}
+
+
+mensagemLogin(
+"Criando sua conta..."
+);
+
+
+const {data,error} =
+await supabaseClient.auth.signUp({
+
+email:email,
+
+password:senha,
+
+options:{
+data:{
+nome:nome
+}
+}
+
+});
+
+
+if(error){
+
+console.error(error);
+
+mensagemLogin(
+error.message,
+true
+);
+
+return;
+
+}
+
+
+/*
+Se a confirmação de e-mail estiver
+ativada no Supabase, o usuário precisará
+confirmar o e-mail.
+*/
+
+if(data.session){
+
+mostrarSistema(data.user);
+
+}else{
+
+mensagemLogin(
+"Conta criada! Verifique seu e-mail para confirmar o cadastro."
+);
+
+}
+
+}
+
+
+/* ==========================================
+   LOGIN
+========================================== */
+
+async function entrar(){
+
+const email =
+document.getElementById("email")
+.value.trim();
+
+const senha =
+document.getElementById("senha")
+.value;
+
+
+if(!email || !senha){
+
+mensagemLogin(
+"Digite seu e-mail e senha.",
+true
+);
+
+return;
+
+}
+
+
+mensagemLogin(
+"Entrando..."
+);
+
+
+const {data,error} =
+await supabaseClient.auth.signInWithPassword({
+
+email:email,
+
+password:senha
+
+});
+
+
+if(error){
+
+console.error(error);
+
+mensagemLogin(
+"E-mail ou senha incorretos.",
+true
+);
+
+return;
+
+}
+
+
+mostrarSistema(data.user);
+
+}
+
+
+/* ==========================================
+   MOSTRAR SISTEMA
+========================================== */
+
+async function mostrarSistema(user){
+
+document
+.getElementById("telaLogin")
+.classList.add("oculto");
+
+document
+.getElementById("sistema")
+.classList.remove("oculto");
+
+
+const nome =
+user.user_metadata?.nome ||
+user.email;
+
+
+document
+.getElementById("usuarioNome")
+.textContent=
+"👤 "+nome;
+
+
+await carregarProdutos();
+
+}
+
+
+/* ==========================================
+   VERIFICAR LOGIN
+========================================== */
+
+async function verificarLogin(){
+
+const {data} =
+await supabaseClient.auth.getSession();
+
+if(data.session){
+
+mostrarSistema(
+data.session.user
+);
+
+}
+
+}
+
+
+/* ==========================================
+   SAIR
+========================================== */
+
+async function sair(){
+
+await supabaseClient.auth.signOut();
+
+produtos=[];
+
+document
+.getElementById("sistema")
+.classList.add("oculto");
+
+document
+.getElementById("telaLogin")
+.classList.remove("oculto");
+
+document
+.getElementById("email")
+.value="";
+
+document
+.getElementById("senha")
+.value="";
+
+}
+
+
+/* ==========================================
+   CARREGAR PRODUTOS
+========================================== */
+
+async function carregarProdutos(){
+
+const {data,error} =
+await supabaseClient
+.from("produtos")
+.select("*")
+.order("id",{ascending:false});
+
+
+if(error){
+
+console.error(error);
+
+mostrarMensagemEstoque(
+"Erro ao carregar estoque: "+
+error.message,
+true
+);
+
+return;
+
+}
+
+
+produtos=data || [];
+
+mostrar();
+
+}
+
+
+/* ==========================================
+   ADICIONAR PRODUTO
+========================================== */
+
+async function adicionar(){
+
+const nome =
+document
+.getElementById("nomeProduto")
+.value.trim();
+
+const preco =
+parseFloat(
+document.getElementById("preco")
+.value
+);
+
+const quantidade =
+parseInt(
+document.getElementById("quantidade")
+.value
+);
+
+const minimo =
+parseInt(
+document.getElementById("minimo")
+.value
+);
+
+
+if(
+!nome ||
+isNaN(preco) ||
+isNaN(quantidade)
+){
+
+mostrarMensagemEstoque(
+"Preencha os dados do produto.",
+true
+);
+
+return;
+
+}
+
+
+const {error} =
+await supabaseClient
+.from("produtos")
+.insert([{
+
+nome:nome,
+
+preco:preco,
+
+quantidade:quantidade,
+
+minimo:isNaN(minimo)
+?10
+:minimo
+
+}]);
+
+
+if(error){
+
+console.error(error);
+
+mostrarMensagemEstoque(
+"Erro ao cadastrar: "+
+error.message,
+true
+);
+
+return;
+
+}
+
+
+document.getElementById("nomeProduto").value="";
+document.getElementById("preco").value="";
+document.getElementById("quantidade").value="";
+document.getElementById("minimo").value="";
+
+
+mostrarMensagemEstoque(
+"Produto cadastrado com sucesso!"
+);
+
+
+carregarProdutos();
+
+}
+
+
+/* ==========================================
+   EXCLUIR
+========================================== */
+
+async function excluir(id){
+
+if(!confirm("Excluir este produto?"))
+return;
+
+
+const {error} =
+await supabaseClient
+.from("produtos")
+.delete()
+.eq("id",id);
+
+
+if(error){
+
+console.error(error);
+
+mostrarMensagemEstoque(
+"Erro ao excluir: "+
+error.message,
+true
+);
+
+return;
+
+}
+
+
+mostrarMensagemEstoque(
+"Produto excluído."
+);
+
+
+carregarProdutos();
+
+}
+
+
+/* ==========================================
+   FILTRAR
+========================================== */
+
+function filtrar(){
+
+mostrar();
+
+}
+
+
+/* ==========================================
+   MOSTRAR PRODUTOS
+========================================== */
+
+function mostrar(){
+
+const busca =
+document
+.getElementById("pesquisa")
+.value
+.toLowerCase();
+
+
+const lista =
+document.getElementById("lista");
+
+
+lista.innerHTML="";
+
+
+produtos.forEach(p=>{
+
+if(
+!p.nome
+.toLowerCase()
+.includes(busca)
+)
+return;
+
+
+const baixo =
+Number(p.quantidade)
+<=
+Number(p.minimo);
+
+
+lista.innerHTML+=`
+
+<tr>
+
+<td>${p.nome}</td>
+
+<td>${dinheiro(p.preco)}</td>
+
+<td>${p.quantidade}</td>
+
+<td class="${baixo?'baixo':'status'}">
+
+${baixo
+?'⚠ Estoque baixo'
+:'✓ Normal'}
+
+</td>
+
+<td>
+
+<button
+onclick="excluir(${p.id})">
+
+Excluir
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+
+atualizarDashboard();
+
+}
+
+
+/* ==========================================
+   DASHBOARD
+========================================== */
+
+function atualizarDashboard(){
+
+const total =
+produtos.length;
+
+
+const unidades =
+produtos.reduce(
+(a,p)=>
+a+
+Number(p.quantidade),
+0
+);
+
+
+const baixo =
+produtos.filter(
+p=>
+Number(p.quantidade)
+<=
+Number(p.minimo)
+).length;
+
+
+const valor =
+produtos.reduce(
+(a,p)=>
+a+
+(
+Number(p.preco)
+*
+Number(p.quantidade)
+),
+0
+);
+
+
+document
+.getElementById("totalProdutos")
+.textContent=
+total;
+
+
+document
+.getElementById("totalEstoque")
+.textContent=
+unidades;
+
+
+document
+.getElementById("estoqueBaixo")
+.textContent=
+baixo;
+
+
+document
+.getElementById("valorEstoque")
+.textContent=
+dinheiro(valor);
+
+}
+
+
+/* ==========================================
+   DINHEIRO
+========================================== */
+
+function dinheiro(valor){
+
+return Number(valor)
+.toLocaleString(
+"pt-BR",
+{
+style:"currency",
+currency:"BRL"
+}
+);
+
+}
+
+
+/* ==========================================
+   MENSAGEM ESTOQUE
+========================================== */
+
+function mostrarMensagemEstoque(
+texto,
+erro=false
+){
+
+const campo =
+document.getElementById(
+"mensagemEstoque"
+);
+
+campo.textContent=texto;
+
+campo.style.color =
+erro
+?"#ff6b61"
+:"#39e75f";
+
+setTimeout(()=>{
+
+campo.textContent="";
+
+},4000);
+
+}
+
+
+/* ==========================================
+   ANÁLISE IA
+========================================== */
+
+function analisarIA(){
+
+const baixo =
+produtos.filter(
+p=>
+Number(p.quantidade)
+<=
+Number(p.minimo)
+);
+
+
+if(baixo.length===0){
+
+document
+.getElementById("resposta")
+.innerHTML=
+"🤖 <b>Análise:</b> nenhum produto está abaixo do estoque mínimo.";
+
+return;
+
+}
+
+
+document
+.getElementById("resposta")
+.innerHTML=
+"🤖 <b>Atenção!</b> Produtos que precisam de reposição:<br><br>"+
+baixo
+.map(
+p=>
+"• "+
+p.nome+
+" — "+
+p.quantidade+
+" unidades "+
+"(mínimo "+p.minimo+")"
+)
+.join("<br>");
+
+}
+
+
+/* ==========================================
+   INICIAR
+========================================== */
+
+verificarLogin();
+
+
+/* ==========================================
+   MONITORAR AUTENTICAÇÃO
+========================================== */
+
+supabaseClient.auth.onAuthStateChange(
+(event,session)=>{
+
+if(session){
+
+mostrarSistema(
+session.user
+);
+
+}
+
+}
+);
+
+</script>
+
+</body>
+</html>
