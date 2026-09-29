@@ -5,146 +5,136 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TECSERV ESTOQUE IA</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box}
 
 body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:#07110a;
-    color:white;
+margin:0;
+font-family:Arial,sans-serif;
+background:#07110a;
+color:white
 }
 
 header{
-    background:#0b0b0b;
-    padding:18px;
-    border-bottom:1px solid #1c4024;
+background:#0b0b0b;
+padding:18px;
+border-bottom:1px solid #1c4024
 }
 
 .logo{
-    font-size:25px;
-    font-weight:bold;
+font-size:25px;
+font-weight:bold
 }
 
 .logo span{
-    color:#39e75f;
+color:#39e75f
 }
 
 .container{
-    max-width:1100px;
-    margin:auto;
-    padding:25px;
-}
-
-h1{
-    margin-top:0;
+max-width:1100px;
+margin:auto;
+padding:25px
 }
 
 .cards{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:15px;
-    margin:20px 0;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+margin:20px 0
 }
 
-.card{
-    background:#0e1d13;
-    border:1px solid #1d4427;
-    border-radius:14px;
-    padding:20px;
-}
-
-.card small{
-    color:#9aaa9e;
-}
-
-.number{
-    font-size:30px;
-    font-weight:bold;
-    color:#39e75f;
-    margin-top:8px;
+.card,.panel{
+background:#0e1d13;
+border:1px solid #1d4427;
+border-radius:14px;
+padding:20px
 }
 
 .panel{
-    background:#0e1d13;
-    border:1px solid #1d4427;
-    border-radius:14px;
-    padding:20px;
-    margin-top:20px;
+margin-top:20px
+}
+
+.card small{
+color:#9aaa9e
+}
+
+.number{
+font-size:30px;
+font-weight:bold;
+color:#39e75f;
+margin-top:8px
 }
 
 button{
-    background:#39e75f;
-    border:0;
-    padding:12px 18px;
-    border-radius:8px;
-    font-weight:bold;
-    cursor:pointer;
+background:#39e75f;
+border:0;
+padding:12px 18px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer
 }
 
-input,select{
-    background:#08120b;
-    color:white;
-    border:1px solid #285533;
-    padding:11px;
-    border-radius:8px;
-    width:100%;
-    margin:6px 0;
+button:hover{
+opacity:.85
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:15px;
-}
-
-th,td{
-    padding:12px;
-    border-bottom:1px solid #1d3823;
-    text-align:left;
-}
-
-th{
-    color:#8fa996;
-}
-
-.status{
-    color:#39e75f;
-}
-
-.baixo{
-    color:#ff6b61;
+input{
+background:#08120b;
+color:white;
+border:1px solid #285533;
+padding:11px;
+border-radius:8px;
+width:100%;
+margin:6px 0
 }
 
 .form{
-    display:grid;
-    grid-template-columns:2fr 1fr 1fr 1fr auto;
-    gap:8px;
-    align-items:end;
+display:grid;
+grid-template-columns:2fr 1fr 1fr 1fr auto;
+gap:8px;
+align-items:end
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px
+}
+
+th,td{
+padding:12px;
+border-bottom:1px solid #1d3823;
+text-align:left
+}
+
+th{
+color:#8fa996
+}
+
+.status{
+color:#39e75f
+}
+
+.baixo{
+color:#ff6b61
+}
+
+#mensagem{
+margin-top:10px;
+font-weight:bold
 }
 
 @media(max-width:800px){
-    .cards{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .form{
-        grid-template-columns:1fr;
-    }
+.cards{grid-template-columns:repeat(2,1fr)}
+.form{grid-template-columns:1fr}
 }
 
 @media(max-width:500px){
-    .cards{
-        grid-template-columns:1fr;
-    }
-
-    .container{
-        padding:15px;
-    }
-
-    table{
-        font-size:13px;
-    }
+.cards{grid-template-columns:1fr}
+.container{padding:15px}
+table{font-size:13px}
 }
 </style>
 </head>
@@ -152,9 +142,9 @@ th{
 <body>
 
 <header>
-    <div class="logo">
-        TEC<span>SERV</span> ESTOQUE IA
-    </div>
+<div class="logo">
+TEC<span>SERV</span> ESTOQUE IA
+</div>
 </header>
 
 <div class="container">
@@ -181,7 +171,7 @@ th{
 
 <div class="card">
 <small>Valor do estoque</small>
-<div class="number" id="valorEstoque">R$ 0</div>
+<div class="number" id="valorEstoque">R$ 0,00</div>
 </div>
 
 </div>
@@ -218,13 +208,17 @@ th{
 
 </div>
 
+<div id="mensagem"></div>
+
 </div>
 
 <div class="panel">
 
 <h2>📦 Estoque</h2>
 
-<input id="pesquisa" placeholder="🔎 Pesquisar produto..." oninput="mostrar()">
+<input id="pesquisa"
+placeholder="🔎 Pesquisar produto..."
+oninput="mostrar()">
 
 <table>
 
@@ -262,44 +256,56 @@ Analisar estoque
 
 <script>
 
-let produtos =
-JSON.parse(localStorage.getItem("tecserv_produtos")) || [
+/* ==============================
+   CONFIGURAÇÃO SUPABASE
+   ============================== */
 
-{
-nome:"Tampa Flip Top 43",
-preco:0.85,
-quantidade:1200,
-minimo:500
-},
+const SUPABASE_URL =
+"https://hefszyovtyhweyuaheof.supabase.co";
 
-{
-nome:"Tampa Lisa",
-preco:0.65,
-quantidade:350,
-minimo:500
-},
+/*
+COLOQUE AQUI SUA PUBLISHABLE KEY
+OU A CHAVE anon pública do Supabase.
+*/
 
-{
-nome:"Canhão",
-preco:1.20,
-quantidade:800,
-minimo:300
-}
+const SUPABASE_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhlZnN6eW92dHlod2V5dWFoZW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2OTU1MTgsImV4cCI6MjEwNjI3MTUxOH0.ygbgiLPtoAY423UzabRWUjPeYqFBieHGkek0Lc-7jHw";
 
-];
-
-function salvar(){
-
-localStorage.setItem(
-"tecserv_produtos",
-JSON.stringify(produtos)
+const supabaseClient =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
 );
 
+
+/* ==============================
+   MENSAGEM
+   ============================== */
+
+function mensagem(texto, erro=false){
+
+const campo =
+document.getElementById("mensagem");
+
+campo.textContent=texto;
+
+campo.style.color =
+erro ? "#ff6b61" : "#39e75f";
+
+setTimeout(()=>{
+campo.textContent="";
+},4000);
+
 }
+
+
+/* ==============================
+   FORMATAR DINHEIRO
+   ============================== */
 
 function dinheiro(valor){
 
-return valor.toLocaleString(
+return Number(valor).toLocaleString(
 "pt-BR",
 {
 style:"currency",
@@ -309,82 +315,175 @@ currency:"BRL"
 
 }
 
-function adicionar(){
 
-let nome=document.getElementById("nome").value;
+/* ==============================
+   CARREGAR PRODUTOS
+   ============================== */
 
-let preco=parseFloat(
-document.getElementById("preco").value
+async function carregarProdutos(){
+
+const {data,error} =
+await supabaseClient
+.from("produtos")
+.select("*")
+.order("id",{ascending:false});
+
+if(error){
+
+console.error(error);
+
+mensagem(
+"Erro ao carregar produtos: "+error.message,
+true
 );
-
-let quantidade=parseInt(
-document.getElementById("quantidade").value
-);
-
-let minimo=parseInt(
-document.getElementById("minimo").value
-);
-
-if(!nome || isNaN(preco) || isNaN(quantidade)){
-
-alert("Preencha os dados do produto.");
 
 return;
+}
+
+mostrar(data || []);
 
 }
 
-produtos.push({
+
+/* ==============================
+   ADICIONAR
+   ============================== */
+
+async function adicionar(){
+
+const nome =
+document.getElementById("nome").value.trim();
+
+const preco =
+parseFloat(
+document.getElementById("preco").value
+);
+
+const quantidade =
+parseInt(
+document.getElementById("quantidade").value
+);
+
+const minimo =
+parseInt(
+document.getElementById("minimo").value
+);
+
+if(
+!nome ||
+isNaN(preco) ||
+isNaN(quantidade)
+){
+
+mensagem(
+"Preencha os dados do produto.",
+true
+);
+
+return;
+}
+
+const {error} =
+await supabaseClient
+.from("produtos")
+.insert([{
 
 nome:nome,
 preco:preco,
 quantidade:quantidade,
-minimo:minimo || 10
+minimo:isNaN(minimo) ? 10 : minimo
 
-});
+}]);
 
-salvar();
+if(error){
+
+console.error(error);
+
+mensagem(
+"Erro ao cadastrar: "+error.message,
+true
+);
+
+return;
+}
 
 document.getElementById("nome").value="";
 document.getElementById("preco").value="";
 document.getElementById("quantidade").value="";
 document.getElementById("minimo").value="";
 
-mostrar();
+mensagem("Produto cadastrado com sucesso!");
+
+carregarProdutos();
 
 }
 
-function excluir(index){
 
-if(confirm("Excluir este produto?")){
+/* ==============================
+   EXCLUIR
+   ============================== */
 
-produtos.splice(index,1);
+async function excluir(id){
 
-salvar();
+if(!confirm("Excluir este produto?"))
+return;
 
-mostrar();
+const {error} =
+await supabaseClient
+.from("produtos")
+.delete()
+.eq("id",id);
+
+if(error){
+
+console.error(error);
+
+mensagem(
+"Erro ao excluir: "+error.message,
+true
+);
+
+return;
+}
+
+mensagem("Produto excluído.");
+
+carregarProdutos();
 
 }
 
-}
 
-function mostrar(){
+/* ==============================
+   MOSTRAR
+   ============================== */
 
-let busca=
-document.getElementById("pesquisa").value.toLowerCase();
+let produtos=[];
 
-let lista=
+function mostrar(lista=null){
+
+if(lista!==null)
+produtos=lista;
+
+const busca =
+document
+.getElementById("pesquisa")
+.value
+.toLowerCase();
+
+const tabela =
 document.getElementById("lista");
 
-lista.innerHTML="";
+tabela.innerHTML="";
 
-produtos.forEach((p,index)=>{
+produtos.forEach(p=>{
 
 if(!p.nome.toLowerCase().includes(busca))
 return;
 
-let baixo=p.quantidade<=p.minimo;
+const baixo =
+Number(p.quantidade)<=Number(p.minimo);
 
-lista.innerHTML+=`
+tabela.innerHTML += `
 
 <tr>
 
@@ -402,7 +501,7 @@ ${baixo?'⚠ Estoque baixo':'✓ Normal'}
 
 <td>
 
-<button onclick="excluir(${index})">
+<button onclick="excluir(${p.id})">
 Excluir
 </button>
 
@@ -418,60 +517,95 @@ atualizar();
 
 }
 
+
+/* ==============================
+   DASHBOARD
+   ============================== */
+
 function atualizar(){
 
-let total=produtos.length;
+const total =
+produtos.length;
 
-let unidades=
+const unidades =
 produtos.reduce(
-(a,p)=>a+p.quantidade,0
+(a,p)=>a+Number(p.quantidade),
+0
 );
 
-let baixo=
+const baixo =
 produtos.filter(
-p=>p.quantidade<=p.minimo
+p=>Number(p.quantidade)<=Number(p.minimo)
 ).length;
 
-let valor=
+const valor =
 produtos.reduce(
-(a,p)=>a+(p.preco*p.quantidade),0
+(a,p)=>
+a+
+(Number(p.preco)*Number(p.quantidade)),
+0
 );
 
-document.getElementById("totalProdutos").textContent=total;
+document.getElementById(
+"totalProdutos"
+).textContent=total;
 
-document.getElementById("totalEstoque").textContent=unidades;
+document.getElementById(
+"totalEstoque"
+).textContent=unidades;
 
-document.getElementById("estoqueBaixo").textContent=baixo;
+document.getElementById(
+"estoqueBaixo"
+).textContent=baixo;
 
-document.getElementById("valorEstoque").textContent=dinheiro(valor);
+document.getElementById(
+"valorEstoque"
+).textContent=dinheiro(valor);
 
 }
 
+
+/* ==============================
+   IA
+   ============================== */
+
 function analisarIA(){
 
-let baixo=
+const baixo =
 produtos.filter(
-p=>p.quantidade<=p.minimo
+p=>Number(p.quantidade)<=Number(p.minimo)
 );
 
 if(baixo.length===0){
 
-document.getElementById("resposta").innerHTML=
+document.getElementById(
+"resposta"
+).innerHTML=
 "🤖 <b>Análise:</b> nenhum produto está abaixo do estoque mínimo.";
 
 return;
 
 }
 
-document.getElementById("resposta").innerHTML=
-"🤖 <b>Atenção!</b> Os seguintes produtos precisam de reposição:<br><br>"+
+document.getElementById(
+"resposta"
+).innerHTML=
+"🤖 <b>Atenção!</b> Produtos que precisam de reposição:<br><br>"+
 baixo.map(
-p=>"• "+p.nome+" — "+p.quantidade+" unidades"
+p=>
+"• "+p.nome+
+" — "+p.quantidade+
+" unidades (mínimo "+p.minimo+")"
 ).join("<br>");
 
 }
 
-mostrar();
+
+/* ==============================
+   INICIAR
+   ============================== */
+
+carregarProdutos();
 
 </script>
 
