@@ -1,77 +1,479 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TECSERV - Estoque IA</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TECSERV ESTOQUE IA</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6f5;
-      color: #222;
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#07110a;
+    color:white;
+}
+
+header{
+    background:#0b0b0b;
+    padding:18px;
+    border-bottom:1px solid #1c4024;
+}
+
+.logo{
+    font-size:25px;
+    font-weight:bold;
+}
+
+.logo span{
+    color:#39e75f;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:25px;
+}
+
+h1{
+    margin-top:0;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin:20px 0;
+}
+
+.card{
+    background:#0e1d13;
+    border:1px solid #1d4427;
+    border-radius:14px;
+    padding:20px;
+}
+
+.card small{
+    color:#9aaa9e;
+}
+
+.number{
+    font-size:30px;
+    font-weight:bold;
+    color:#39e75f;
+    margin-top:8px;
+}
+
+.panel{
+    background:#0e1d13;
+    border:1px solid #1d4427;
+    border-radius:14px;
+    padding:20px;
+    margin-top:20px;
+}
+
+button{
+    background:#39e75f;
+    border:0;
+    padding:12px 18px;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+input,select{
+    background:#08120b;
+    color:white;
+    border:1px solid #285533;
+    padding:11px;
+    border-radius:8px;
+    width:100%;
+    margin:6px 0;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th,td{
+    padding:12px;
+    border-bottom:1px solid #1d3823;
+    text-align:left;
+}
+
+th{
+    color:#8fa996;
+}
+
+.status{
+    color:#39e75f;
+}
+
+.baixo{
+    color:#ff6b61;
+}
+
+.form{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr 1fr auto;
+    gap:8px;
+    align-items:end;
+}
+
+@media(max-width:800px){
+    .cards{
+        grid-template-columns:repeat(2,1fr);
     }
 
-    header {
-      background: #111;
-      color: white;
-      padding: 20px;
-      text-align: center;
+    .form{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:500px){
+    .cards{
+        grid-template-columns:1fr;
     }
 
-    header span {
-      color: #16a34a;
+    .container{
+        padding:15px;
     }
 
-    .container {
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 20px;
+    table{
+        font-size:13px;
     }
-
-    .card {
-      background: white;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      margin-bottom: 20px;
-    }
-
-    button {
-      background: #16a34a;
-      color: white;
-      border: 0;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-  </style>
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  <h1>TEC<span>SERV</span></h1>
-  <p>Estoque IA</p>
+    <div class="logo">
+        TEC<span>SERV</span> ESTOQUE IA
+    </div>
 </header>
 
 <div class="container">
 
-  <div class="card">
-    <h2>📦 Sistema de Estoque</h2>
-    <p>Bem-vindo ao sistema TECSERV Estoque IA.</p>
-    <button onclick="alert('Sistema funcionando!')">
-      Entrar no sistema
-    </button>
-  </div>
+<h1>Dashboard</h1>
+<p>Controle inteligente do seu estoque.</p>
 
-  <div class="card">
-    <h2>🤖 Inteligência Artificial</h2>
-    <p>Controle de produtos, estoque e movimentações.</p>
-  </div>
+<div class="cards">
+
+<div class="card">
+<small>Total de produtos</small>
+<div class="number" id="totalProdutos">0</div>
+</div>
+
+<div class="card">
+<small>Unidades em estoque</small>
+<div class="number" id="totalEstoque">0</div>
+</div>
+
+<div class="card">
+<small>Estoque baixo</small>
+<div class="number" id="estoqueBaixo">0</div>
+</div>
+
+<div class="card">
+<small>Valor do estoque</small>
+<div class="number" id="valorEstoque">R$ 0</div>
+</div>
 
 </div>
+
+<div class="panel">
+
+<h2>➕ Cadastrar produto</h2>
+
+<div class="form">
+
+<div>
+<label>Produto</label>
+<input id="nome" placeholder="Ex.: Tampa Flip Top 43">
+</div>
+
+<div>
+<label>Preço</label>
+<input id="preco" type="number" step="0.01" placeholder="0,00">
+</div>
+
+<div>
+<label>Quantidade</label>
+<input id="quantidade" type="number" placeholder="0">
+</div>
+
+<div>
+<label>Estoque mínimo</label>
+<input id="minimo" type="number" placeholder="10">
+</div>
+
+<div>
+<button onclick="adicionar()">Adicionar</button>
+</div>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<h2>📦 Estoque</h2>
+
+<input id="pesquisa" placeholder="🔎 Pesquisar produto..." oninput="mostrar()">
+
+<table>
+
+<thead>
+<tr>
+<th>Produto</th>
+<th>Preço</th>
+<th>Quantidade</th>
+<th>Status</th>
+<th>Ação</th>
+</tr>
+</thead>
+
+<tbody id="lista"></tbody>
+
+</table>
+
+</div>
+
+<div class="panel">
+
+<h2>🤖 Assistente IA</h2>
+
+<p id="resposta">
+Clique no botão para analisar seu estoque.
+</p>
+
+<button onclick="analisarIA()">
+Analisar estoque
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+let produtos =
+JSON.parse(localStorage.getItem("tecserv_produtos")) || [
+
+{
+nome:"Tampa Flip Top 43",
+preco:0.85,
+quantidade:1200,
+minimo:500
+},
+
+{
+nome:"Tampa Lisa",
+preco:0.65,
+quantidade:350,
+minimo:500
+},
+
+{
+nome:"Canhão",
+preco:1.20,
+quantidade:800,
+minimo:300
+}
+
+];
+
+function salvar(){
+
+localStorage.setItem(
+"tecserv_produtos",
+JSON.stringify(produtos)
+);
+
+}
+
+function dinheiro(valor){
+
+return valor.toLocaleString(
+"pt-BR",
+{
+style:"currency",
+currency:"BRL"
+}
+);
+
+}
+
+function adicionar(){
+
+let nome=document.getElementById("nome").value;
+
+let preco=parseFloat(
+document.getElementById("preco").value
+);
+
+let quantidade=parseInt(
+document.getElementById("quantidade").value
+);
+
+let minimo=parseInt(
+document.getElementById("minimo").value
+);
+
+if(!nome || isNaN(preco) || isNaN(quantidade)){
+
+alert("Preencha os dados do produto.");
+
+return;
+
+}
+
+produtos.push({
+
+nome:nome,
+preco:preco,
+quantidade:quantidade,
+minimo:minimo || 10
+
+});
+
+salvar();
+
+document.getElementById("nome").value="";
+document.getElementById("preco").value="";
+document.getElementById("quantidade").value="";
+document.getElementById("minimo").value="";
+
+mostrar();
+
+}
+
+function excluir(index){
+
+if(confirm("Excluir este produto?")){
+
+produtos.splice(index,1);
+
+salvar();
+
+mostrar();
+
+}
+
+}
+
+function mostrar(){
+
+let busca=
+document.getElementById("pesquisa").value.toLowerCase();
+
+let lista=
+document.getElementById("lista");
+
+lista.innerHTML="";
+
+produtos.forEach((p,index)=>{
+
+if(!p.nome.toLowerCase().includes(busca))
+return;
+
+let baixo=p.quantidade<=p.minimo;
+
+lista.innerHTML+=`
+
+<tr>
+
+<td>${p.nome}</td>
+
+<td>${dinheiro(p.preco)}</td>
+
+<td>${p.quantidade}</td>
+
+<td class="${baixo?'baixo':'status'}">
+
+${baixo?'⚠ Estoque baixo':'✓ Normal'}
+
+</td>
+
+<td>
+
+<button onclick="excluir(${index})">
+Excluir
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+atualizar();
+
+}
+
+function atualizar(){
+
+let total=produtos.length;
+
+let unidades=
+produtos.reduce(
+(a,p)=>a+p.quantidade,0
+);
+
+let baixo=
+produtos.filter(
+p=>p.quantidade<=p.minimo
+).length;
+
+let valor=
+produtos.reduce(
+(a,p)=>a+(p.preco*p.quantidade),0
+);
+
+document.getElementById("totalProdutos").textContent=total;
+
+document.getElementById("totalEstoque").textContent=unidades;
+
+document.getElementById("estoqueBaixo").textContent=baixo;
+
+document.getElementById("valorEstoque").textContent=dinheiro(valor);
+
+}
+
+function analisarIA(){
+
+let baixo=
+produtos.filter(
+p=>p.quantidade<=p.minimo
+);
+
+if(baixo.length===0){
+
+document.getElementById("resposta").innerHTML=
+"🤖 <b>Análise:</b> nenhum produto está abaixo do estoque mínimo.";
+
+return;
+
+}
+
+document.getElementById("resposta").innerHTML=
+"🤖 <b>Atenção!</b> Os seguintes produtos precisam de reposição:<br><br>"+
+baixo.map(
+p=>"• "+p.nome+" — "+p.quantidade+" unidades"
+).join("<br>");
+
+}
+
+mostrar();
+
+</script>
 
 </body>
 </html>
